@@ -192,58 +192,13 @@ function exportJson(data: any) {
 }
 
 async function fetchLeetCodeLive(username: string) {
-    const query = `
-    query getUserProfile($username: String!) {
-      matchedUser(username: $username) {
-        username
-        profile {
-          ranking
-          reputation
-          starRating
-          realName
-          userAvatar
-          aboutMe
-        }
-        submitStatsGlobal {
-          acSubmissionNum {
-            difficulty
-            count
-            submissions
-          }
-        }
-        languageProblemCount {
-          languageName
-          problemsSolved
-        }
-      }
-      userContestRanking(username: $username) {
-        rating
-        globalRanking
-        attendedContestsCount
-        topPercentage
-      }
-      userProfileUserQuestionProgressV2(userSlug: $username) {
-        numAcceptedQuestions {
-          difficulty
-          count
-        }
-        numFailedQuestions {
-          difficulty
-          count
-        }
-      }
-    }
-  `;
-
-    const response = await fetch("https://leetcode.com/graphql/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query, variables: { username } }),
-    });
+    const response = await fetch(`/api/leetcode?username=${username}`);
 
     if (!response.ok) throw new Error("Failed to fetch LeetCode stats");
+
     const json = await response.json();
     if (json.errors?.length) throw new Error(json.errors[0].message || "GraphQL error");
+
     return json.data;
 }
 
